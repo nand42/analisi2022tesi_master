@@ -1,5 +1,6 @@
 import math
 import pandas as pd
+import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -9,7 +10,6 @@ from pathintegralanalytics.pathintegralanalytics import pathIntegralObjects as p
 from pathintegralanalytics.pathintegralanalytics import new_plot_functions as plf
 from pathintegralanalytics.pathintegralanalytics import LatticePedSimulation as sim
 
-os.system('clear')
 
 if True:  # print path of some modules
     print('\n\n--- path modulo mcf ---')
@@ -150,105 +150,69 @@ def drop_by_NumPid(df, max_NumPid, PidList=[]):
     return new_df
 
 
-#  ---  ---  ---  Beginning of the program  ---  ---  ---
+def calc_df_info(df, Num_pid_iniziali=0):
+    Num_pid_rimasti = int(mcf.count_pids(df))
+    distance_min = round(df['distance'].min())
+    distance_mean = round(df['distance'].mean())
+    distance_max = round(df['distance'].max())
+    Rstep_len_min = round(df['Rstep_len'].min())
+    Rstep_len_mean = round(df['Rstep_len'].mean())
+    Rstep_len_max = round(df['Rstep_len'].max())
+
+    dict_info = {'Num_pid_rimasti': Num_pid_rimasti}
+    if Num_pid_iniziali != 0:
+        dict_info.update({'Num_pid_iniziali': Num_pid_iniziali})
+    dict_info.update({'distance_min': distance_min
+                     , 'distance_mean': distance_mean
+                     , 'distance_max': distance_max
+                     , 'Rstep_len_min': Rstep_len_min
+                     , 'Rstep_len_mean': Rstep_len_mean
+                     , 'Rstep_len_max': Rstep_len_max})
+    return dict_info
 
 
-par = {
-    'index_sort': 'unixepoch'
-    , 'DataInterface_type': 'prorail_single_file'
-    , 'verbose': True
-
-    , 'dtype_Amatrix': np.uint16
-    , 'reduce_rows_to': 10000000
-    , 'Lx': 23000
-    , 'Ly': 10000
-    , 'Dx': 200
-    , 'Dy': 100
-    # , 'bins_hist_vtk': [
-    #      np.linspace(0, 230, 200),
-    #      np.linspace(-1, 1, 100),
-    #      np.linspace(0, 200, 200)
-    #      ]
-    , 'delta_pedestrian_state_dimension': 1
-
-    , 'window_length_loc': 31
-    , 'polyorder_loc': 7
-    , 'cut_short_trj': (100, 250)
-
-    , 'calc_velocity': mcf.calc_velocity_SG
-    , 'scale': 'D'
-
-    , 'grb': 'pid'
-
-    , 'experiment': 'trainf10'
-    , 'datatype': 'RealData'
-    , 'format': '.pdf'
-    , 'crop_floorfield': False  # only executed if True
-    , 'floorfield_dim': {'x_origin': 0,
-                         'y_origin': 0,
-                         'width': 190,
-                         'height': 200}  # used in prorail classes and histogram creation
-    , 'use_improved_grid_calculation': True  # this replaces the use of Lx and Ly
-    , 'drop_invalid_transitions': False  # don't think this is used anymore
-    , 'normalization_threshold': 10 ** -9  # used to assess whether transition matrix is correctly normalized
-    , 'normalization_threshold_exponent': 7
-    , 'rotate_transition_matrices': False  # this is for the move and norm_move matrices
-}
-
-source_file_path, target_file_path = ask_path(
-    default_devel_path='/Users/dcm/analisi2022tesi_master/datasets/FF10_data10_SP_PidNum_20_OnePid_PidNum_20_processed.csv'
-    , default_entire_path='/Users/dcm/analisi2022tesi_master/datasets/FF10_data10_AllMaster_processed.csv')
-
-verbose = True
-
-MyNumPid_max = 2000
-MyDistance_min = 200
-MyDistance_max = 500
-MyRstep_min = 150
-MyRstep_max = 300
-
-MyNumPid_max = choose_var_default(MyNumPid_max, namevar='MyNumPid_max')
-MyDistance_min = choose_var_default(MyDistance_min, namevar='MyDistance_min')
-MyDistance_max = choose_var_default(MyDistance_max, namevar='MyDistance_max')
-MyRstep_min = choose_var_default(MyRstep_min, namevar='MyRstep_min')
-MyRstep_max = choose_var_default(MyRstep_max, namevar='MyRstep_max')
-
-print('\n   ---   \n')
-
-df = pd.read_csv(source_file_path)
-print(df.keys())
-
-print('\n   ---   \n')
-
-Pid_list, Num_pid = make_pid_list_and_count(df)
-
-print('\n   ---   \n')
-
-df, Rstep_min, Rstep_max = drop_by_PidRstep_GetMinMax(df, MyRstep_min, MyRstep_max)
-print(df.keys())
-
-print('\n   ---   \n')
-
-Pid_list, Num_pid = make_pid_list_and_count(df)
-
-print('\n   ---   \n')
-
-df = drop_by_distance(df, MyDistance_min, MyDistance_max)
-print(df.keys())
-
-print('\n   ---   \n')
-
-df = drop_by_NumPid(df, MyNumPid_max)
-
-print('\n   ---   \n')
-
-print(df[:3])
-
-print('\n   ---   \n')
-print('ok')
+def save_csv(df, source_file_name, processed=True, reduced=True):
+    target_file_name = source_file_name[:-4]
+    if processed:
+        target_file_name = target_file_name + '_proc'
+    if reduced:
+        target_file_name = target_file_name + '_red'
+    target_file_name = target_file_name + '.csv'
+    df.to_csv(target_file_name)
+    print("\nNew dataframe saved in: \n >>  " + target_file_name)
+    return target_file_name
 
 
+def save_txt_info(dict_info, target_file_name):
+    create_txt_file_same_name = target_file_name[:-4] + '.txt'
+    creationtime = datetime.datetime.now()
+    cosa_scrivere_nel_file = 'CREATION DATE & TIME :  ' + str(creationtime) + \
+                             '\n\ninfo txt file of dataframe: ' + \
+                             '\n\n >>  ' + str(target_file_name) + \
+                             '\n\nDistance minima = ' + str(dict_info['distance_min']) +  \
+                             '\nDistance media = ' + str(dict_info['distance_mean']) +  \
+                             '\nDistance max = ' + str(dict_info['distance_max']) +  \
+                             '\nRstep_len minima = ' + str(dict_info['Rstep_len_min']) +  \
+                             '\nRstep_len media = ' + str(dict_info['Rstep_len_mean']) +  \
+                             '\nRstep_len max = ' + str(dict_info['Rstep_len_max'])
+    if 'Num_pid_iniziali' in dict_info:
+        cosa_scrivere_nel_file = cosa_scrivere_nel_file + \
+                                 '\nNumero di pid rimasti su iniziali = ' + \
+                                 str(dict_info['Num_pid_rimasti']) + \
+                                 ' / ' + str(dict_info['Num_pid_iniziali'])
+    else:
+        cosa_scrivere_nel_file = cosa_scrivere_nel_file + \
+                                 '\nNumero di pid rimasti = ' + \
+                                 str(dict_info['Num_pid_rimasti'])
 
+    with open(create_txt_file_same_name, 'w') as f:
+        f.write(cosa_scrivere_nel_file)
+
+    print("\nNew info.txt saved in: \n >>  " + create_txt_file_same_name)
+    return cosa_scrivere_nel_file
+
+
+#  ---  ---  ---  End of the library  ---  ---  ---
 
 
 
