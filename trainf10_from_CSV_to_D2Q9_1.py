@@ -85,10 +85,6 @@ Num_pid_iniziali = Num_pid
 
 print('\n   ---   \n')
 
-plf.just_plot_three(source_file_path, par)
-
-print('\n   ---   \n')
-
 pedDataIface, target_file_path = op.get_PDIface(source_file_path, par, rename_col=True)
 
 print(target_file_path)
@@ -103,5 +99,15 @@ print('\n   ---   \n')
 
 plf.make_D2Q9_matrix_heatmap(dict_transD2Q9['norm_move']
                              , filename='figure_trainf10_')
+
+print('\n   ---   \n')
+
+new_df = dict_transD2Q9['return_tracks']
+print(new_df[:3])
+
+source_file_path = op.save_csv(new_df, source_file_path, reduced=False)
+
+plf.just_plot_three(source_file_path, par)
+
 
 print('\n   ---   \n')
