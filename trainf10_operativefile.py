@@ -106,7 +106,7 @@ def calc_the_distance(df, start=1, end=1):
     for pid in PidList:
         df_pid = df.query('pid == @pid')
         df_pid, distance = calc_one_pid_distance(df_pid, pid, start=1, end=1)
-
+        """old 
         xi = df_pid.query('Rstep == @start').head(1)['x'].iloc[0]
         yi = df_pid.query('Rstep == @start').head(1)['y'].iloc[0]
         xf = df_pid.query('Rstep == Rstep_len-@end').head(1)['x'].iloc[0]
@@ -115,6 +115,7 @@ def calc_the_distance(df, start=1, end=1):
         distance = round(math.sqrt(((xi - xf) ** 2 + (yi - yf) ** 2)))
 
         df_pid = df_pid.assign(distance=distance)
+        """
         new_df = pd.concat([new_df, df_pid])
 
     print('Added new colum DISTANCE to the dataframe and created a new equal empty dataframe')
@@ -150,10 +151,12 @@ def drop_by_distance(df, min_distance, max_distance):
         new_df = df[0:0]
         for pid in PidList:
             df_pid = df.query('pid == @pid')
-            df_pid, df_pid_zero = calc_the_distance(df_pid)
-            df_pid = df_pid.drop(df[df_pid.distance < min_distance].index)
-            df_pid = df_pid.drop(df[df_pid.distance > max_distance].index)
-            new_df = pd.concat([new_df, df_pid])
+            df_pid, distance = calc_one_pid_distance(df_pid, pid, start=1, end=1)
+            if (distance < min_distance) or (distance > max_distance):
+                pass
+            else:
+                new_df = pd.concat([new_df, df_pid])
+
         print('Dropped pids by distance')
         return new_df
     else:
