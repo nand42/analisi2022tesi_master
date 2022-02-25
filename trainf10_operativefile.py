@@ -248,11 +248,19 @@ def rename_PDIface_x_y(pedDataIface):
     return pedDataIface
 
 
-def make_default_csv_for_PDIface(source_file_path, x_col='x_pos', y_col='y_pos', time='timestampms', savecsv=True):
+def make_default_csv_for_PDIface(source_file_path
+                                 , x_col='x_pos'
+                                 , y_col='y_pos'
+                                 , time='timestampms'
+                                 , pid='tracked_object'
+                                 , savecsv=True):
     df = pd.read_csv(source_file_path)
     print('\nKeys before')
     print(df.keys())
-    df = df.rename(columns={'x': x_col, 'y': y_col, 'unixepoch': time})
+    df = df.rename(columns={'x': x_col
+                            , 'y': y_col
+                            , 'unixepoch': time
+                            , 'pid': pid})
     target_file_path = source_file_path[:-4] + '_def_.csv'
     print('\nKeys after')
     print(df.keys())
@@ -264,7 +272,12 @@ def make_default_csv_for_PDIface(source_file_path, x_col='x_pos', y_col='y_pos',
 
 
 def get_PDIface(source_file_path, par, rename_col=True):
-    file_list = [source_file_path]
+    df = pd.read_csv(source_file_path)
+    if 'x_pos' not in df.index or 'timestampms' not in df.index or 'tracked_object' not in df.index:
+        file_list = [make_default_csv_for_PDIface(source_file_path)]
+    else:
+        file_list = [source_file_path]
+
     target_file_path = source_file_path[:-4] + "_Proc" + ".csv"
     pedDataIface = pio.factory_PedestrianTrajectoryDataInterface(file_list, par)
     pedDataIface.calculate_standard_df_override()
@@ -272,7 +285,7 @@ def get_PDIface(source_file_path, par, rename_col=True):
     if rename_col:
         pedDataIface = rename_PDIface_x_y(pedDataIface)
     print('\nCreated object pedDataIface')
-    return pedDataIface
+    return pedDataIface, target_file_path
 
 
 def calc_transD2Q9(pedDataIface, par):

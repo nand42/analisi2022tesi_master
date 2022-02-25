@@ -264,6 +264,7 @@ class VelocityHeatmap(PlotPDF):
         if add_info_to_end_path != 'None':
             self._change_file_name_end(add_text=add_info_to_end_path)
         plt.savefig(self.target)
+        return self.target
 
 
 def select_pids(df, pid_list, _verbose=False):
@@ -444,8 +445,10 @@ def just_plot_three(source_file_path, par, add_info='', _verbose=False):
     if _verbose: print("ok immagine 2")
 
     velheatmap = VelocityHeatmap(df, par)
-    velheatmap.figure_save(add_info_to_end_path=add_info)
+    folder_target = velheatmap.figure_save(add_info_to_end_path=add_info)
     if _verbose: print("ok immagine 3")
+    folder_target = folder_target[:-4]
+    return folder_target
 
 
 def just_plot_three_figeverypid(source_file_path, par, cut_list=0, add_info='', _verbose=False):

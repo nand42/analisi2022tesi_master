@@ -18,7 +18,7 @@ par = {
     , 'verbose': True
 
     , 'dtype_Amatrix': np.uint16
-    , 'reduce_rows_to': 10000000
+    #, 'reduce_rows_to': 10000000
     , 'Lx': 23000
     , 'Ly': 10000
     , 'Dx': 200
@@ -89,10 +89,19 @@ plf.just_plot_three(source_file_path, par)
 
 print('\n   ---   \n')
 
-file_list = [op.make_default_csv_for_PDIface(source_file_path)]
+pedDataIface, target_file_path = op.get_PDIface(source_file_path, par, rename_col=True)
 
-pedDataIface = pio.factory_PedestrianTrajectoryDataInterface(file_list, par)
+print(target_file_path)
 
+print(pedDataIface.df.keys())
 
-# >>>  plf.make_D2Q9_matrix_heatmap()
+print('\n   ---   \n')
 
+dict_transD2Q9 = op.calc_transD2Q9(pedDataIface, par)
+
+print('\n   ---   \n')
+
+plf.make_D2Q9_matrix_heatmap(dict_transD2Q9['norm_move']
+                             , filename='figure_trainf10_')
+
+print('\n   ---   \n')
