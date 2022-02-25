@@ -55,8 +55,8 @@ par = {
 }
 
 source_file_path, target_file_path = op.ask_path(
-    default_devel_path='/Users/dcm/analisi2022tesi_master/datasets/FF10_data10_SP_PidNum_20_OnePid_PidNum_20_processed.csv'
-    , default_entire_path='/Users/dcm/analisi2022tesi_master/datasets/FF10_data10_AllMaster_processed.csv')
+    default_devel_path='/Users/dcm/analisi2022tesi_master/datasets/FF10_data10_SP_PidNum_20_OnePid_PidNum_20_processed_op__proc_red.csv'
+    , default_entire_path='/Users/dcm/analisi2022tesi_master/datasets/FF10_data10_AllMaster_processed_op__proc_red.csv')
 
 verbose = True
 
@@ -87,5 +87,12 @@ print('\n   ---   \n')
 
 plf.just_plot_three(source_file_path, par)
 
+print('\n   ---   \n')
 
+file_list = [op.make_default_csv_for_PDIface(source_file_path)]
+
+pedDataIface = pio.factory_PedestrianTrajectoryDataInterface(file_list, par)
+
+
+# >>>  plf.make_D2Q9_matrix_heatmap()
 

@@ -241,11 +241,26 @@ def save_txt_info(dict_info, target_file_name):
     return cosa_scrivere_nel_file
 
 
-def rename_x_y(pedDataIface):
+def rename_PDIface_x_y(pedDataIface):
     pedDataIface.df = pedDataIface.df.rename(columns={'x': 'g_x', 'y': 'g_y'})
     print(pedDataIface.df[:3])
     print('\nRenamed pedDataIface.df columns \nx > g_x \ny > g_y\n')
     return pedDataIface
+
+
+def make_default_csv_for_PDIface(source_file_path, x_col='x_pos', y_col='y_pos', time='timestampms', savecsv=True):
+    df = pd.read_csv(source_file_path)
+    print('\nKeys before')
+    print(df.keys())
+    df = df.rename(columns={'x': x_col, 'y': y_col, 'unixepoch': time})
+    target_file_path = source_file_path[:-4] + '_def_.csv'
+    print('\nKeys after')
+    print(df.keys())
+    print('\nOriginal file name: ' + source_file_path)
+    print('Edited file name:   ' + target_file_path)
+    if savecsv:
+        df.to_csv(target_file_path)
+    return target_file_path
 
 
 def get_PDIface(source_file_path, par, rename_col=True):
@@ -255,7 +270,7 @@ def get_PDIface(source_file_path, par, rename_col=True):
     pedDataIface.calculate_standard_df_override()
     pedDataIface.calculate_velocity_xy()
     if rename_col:
-        pedDataIface = rename_x_y(pedDataIface)
+        pedDataIface = rename_PDIface_x_y(pedDataIface)
     print('\nCreated object pedDataIface')
     return pedDataIface
 

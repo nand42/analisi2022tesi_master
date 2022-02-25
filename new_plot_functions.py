@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LogNorm
 import pandas as pd
-from . import markov_chain_fun as mcf
-from . import pathIntegralObjects as pio
+from pathintegralanalytics.pathintegralanalytics import markov_chain_fun as mcf
+from pathintegralanalytics.pathintegralanalytics import pathIntegralObjects as pio
+import trainf10_operativefile as op
 
 
 class PlotPDF(object):
@@ -35,6 +36,7 @@ class PlotPDF(object):
         self.y_label = 'y - direction'
         self.clear_figure = True
         self.SG_coordinates = True
+        self.standard_cmap = 'Greens'
 
     def define_physic_space(self):
         """
@@ -221,12 +223,12 @@ class PositionHeatmap(PlotPDF):
                        , self.df.eval(self.y_ax)
                        , bins=(self.x_bins, self.y_bins)
                        , norm=LogNorm()
-                       , cmap='RdBu')
+                       , cmap=self.standard_cmap)
         else:
             plt.hist2d(self.df.eval(self.x_ax)
                        , self.df.eval(self.y_ax)
                        , bins=(self.max_x, self.max_y)
-                       , cmap='RdBu')
+                       , cmap=self.standard_cmap)
         plt.colorbar()
         if add_info_to_end_path != 'None':
             self._change_file_name_end(add_text=add_info_to_end_path)
@@ -252,12 +254,12 @@ class VelocityHeatmap(PlotPDF):
                        , self.df.eval(self.y_ax)
                        , bins=(self.x_bins, self.y_bins)
                        , norm=LogNorm()
-                       , cmap='RdBu')
+                       , cmap=self.standard_cmap)
         else:
             plt.hist2d(self.df.eval(self.x_ax)
                        , self.df.eval(self.y_ax)
                        , bins=(self.x_bins, self.y_bins)
-                       , cmap='RdBu')
+                       , cmap=self.standard_cmap)
         plt.colorbar()
         if add_info_to_end_path != 'None':
             self._change_file_name_end(add_text=add_info_to_end_path)
@@ -425,7 +427,7 @@ def just_plot_three(source_file_path, par, add_info='', _verbose=False):
     df = pd.read_csv(source_file_path)
 
     pid_number = mcf.count_pids(df, print_=True, grb='pid')
-    add_info = add_info + '_NP_' + str(pid_number) + '_'
+    add_info = add_info + '_NumP_' + str(pid_number) + '_'
 
     if _verbose: print('DF has ' + str(pid_number) + ' pids')
 
@@ -446,7 +448,7 @@ def just_plot_three(source_file_path, par, add_info='', _verbose=False):
     if _verbose: print("ok immagine 3")
 
 
-def just_plot_three_figeverypid(source_file_path, par, add_info='', _verbose=False):
+def just_plot_three_figeverypid(source_file_path, par, cut_list=0, add_info='', _verbose=False):
     if _verbose: print("[just_plot_three_figeverypid] - start")
     df = pd.read_csv(source_file_path)
 
@@ -455,8 +457,12 @@ def just_plot_three_figeverypid(source_file_path, par, add_info='', _verbose=Fal
 
     if _verbose: print('DF has ' + str(pid_number) + ' pids')
 
+    pid_list, num_pid = op.make_pid_list_and_count(df)
+    if cut_list != 0:
+        pid_list = pid_list[:cut_list]
+        if _verbose: print('\nList of pids cutted at number of pids = ' + str(num_pid))
+
     # --- start make figures ---
-    pid_list = mcf.find_list_pids_in_tracks(df)
 
     for pid in pid_list:
         if _verbose: print('[for loop] - Pid ' + str(pid))
