@@ -85,50 +85,7 @@ Num_pid_iniziali = Num_pid
 
 print('\n   ---   \n')
 
-df, Rstep_min, Rstep_max = op.drop_by_PidRstep_GetMinMax(df, MyRstep_min, MyRstep_max)
-print(df.keys())
+plf.just_plot_three(source_file_path, par)
 
-print('\n   ---   \n')
 
-Pid_list, Num_pid = op.make_pid_list_and_count(df)
-
-print('\n   ---   \n')
-
-df = op.drop_by_distance(df, MyDistance_min, MyDistance_max)
-print(df.keys())
-
-print('\n   ---   \n')
-
-df = op.drop_by_NumPid(df, MyNumPid_max)
-
-print('\n   ---   \n')
-
-print(df[:3])
-
-print('\n   ---   \n')
-
-dict_info = op.calc_df_info(df, Num_pid_iniziali=Num_pid_iniziali)
-print(dict_info)
-
-print('\n   ---   \n')
-
-target_file_name = op.save_csv(df, target_file_path, processed=True, reduced=True)
-
-print('\n   ---   \n')
-
-cosa_scrivere = op.save_txt_info(dict_info, target_file_name)
-
-print('\n   ---   \n')
-
-print(cosa_scrivere)
-
-print('\n   ---   \n')
-
-pedDataIface = op.get_PDIface(source_file_path, par, rename_col=True)
-
-print('\n   ---   \n')
-
-dict_transD2Q9 = op.calc_transD2Q9(pedDataIface, par)
-
-print('\n   ---   \n')
 

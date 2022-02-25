@@ -7,8 +7,8 @@ import os
 
 from pathintegralanalytics.pathintegralanalytics import markov_chain_fun as mcf
 from pathintegralanalytics.pathintegralanalytics import pathIntegralObjects as pio
-from pathintegralanalytics.pathintegralanalytics import new_plot_functions as plf
 from pathintegralanalytics.pathintegralanalytics import LatticePedSimulation as sim
+import new_plot_functions as plf
 
 """
 IMPORT THIS MODULE AS:  import trainf10_operativefile as op
@@ -149,13 +149,16 @@ def drop_by_distance(df, min_distance, max_distance):
         PidList, Num_pid = make_pid_list_and_count(df)
         df = df.assign(distance=0)
         new_df = df[0:0]
-        for pid in PidList:
+        for i, pid in enumerate(PidList, start=0):
             df_pid = df.query('pid == @pid')
             df_pid, distance = calc_one_pid_distance(df_pid, pid, start=1, end=1)
             if (distance < min_distance) or (distance > max_distance):
-                pass
+                drop_or_not = ' drop  '
             else:
                 new_df = pd.concat([new_df, df_pid])
+                drop_or_not = 'collect'
+            if Num_pid > 1:
+                print("Pid num " + str(i) + ' : ' + drop_or_not + ' : distanza ' + str(distance))
 
         print('Dropped pids by distance')
         return new_df

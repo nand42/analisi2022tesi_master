@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from pathintegralanalytics.pathintegralanalytics import markov_chain_fun as mcf
 from pathintegralanalytics.pathintegralanalytics import pathIntegralObjects as pio
 from pathintegralanalytics.pathintegralanalytics import LatticePedSimulation as sim
-from pathintegralanalytics.pathintegralanalytics import new_plot_functions as plf
+import new_plot_functions as plf
 import trainf10_operativefile as op
 
 os.system('clear')
