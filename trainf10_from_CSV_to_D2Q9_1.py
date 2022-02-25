@@ -21,8 +21,8 @@ par = {
     #, 'reduce_rows_to': 10000000
     , 'Lx': 23000
     , 'Ly': 10000
-    , 'Dx': 200
-    , 'Dy': 100
+    , 'Dx': 400
+    , 'Dy': 200
     # , 'bins_hist_vtk': [
     #      np.linspace(0, 230, 200),
     #      np.linspace(-1, 1, 100),
