@@ -10,7 +10,9 @@ from pathintegralanalytics.pathintegralanalytics import pathIntegralObjects as p
 from pathintegralanalytics.pathintegralanalytics import new_plot_functions as plf
 from pathintegralanalytics.pathintegralanalytics import LatticePedSimulation as sim
 
-
+"""
+IMPORT THIS MODULE AS:  import trainf10_operativefile as op
+"""
 if True:  # print path of some modules
     print('\n\n--- path modulo mcf ---')
     print(mcf.__file__)
@@ -82,7 +84,18 @@ def drop_by_PidRstep_GetMinMax(df, min_PidRstep, max_PidRstep):
     return df, Rstep_min, Rstep_max
 
 
-def calc_distance_and_make_zero_df(df, start=1, end=1):
+def calc_one_pid_distance(df_pid, pid, start=1, end=1):
+    df_pid = df_pid.query('pid == @pid')
+    xi = df_pid.query('Rstep == @start').head(1)['x'].iloc[0]
+    yi = df_pid.query('Rstep == @start').head(1)['y'].iloc[0]
+    xf = df_pid.query('Rstep == Rstep_len-@end').head(1)['x'].iloc[0]
+    yf = df_pid.query('Rstep == Rstep_len-@end').head(1)['y'].iloc[0]
+    distance = round(math.sqrt(((xi - xf) ** 2 + (yi - yf) ** 2)))
+    df_pid = df_pid.assign(distance=distance)
+    return df_pid, distance
+
+
+def calc_the_distance(df, start=1, end=1):
     df = df.assign(distance=0)
     new_df = df[0:0]
     df_zero = df[0:0]
@@ -92,6 +105,7 @@ def calc_distance_and_make_zero_df(df, start=1, end=1):
 
     for pid in PidList:
         df_pid = df.query('pid == @pid')
+        df_pid, distance = calc_one_pid_distance(df_pid, pid, start=1, end=1)
 
         xi = df_pid.query('Rstep == @start').head(1)['x'].iloc[0]
         yi = df_pid.query('Rstep == @start').head(1)['y'].iloc[0]
@@ -110,7 +124,7 @@ def calc_distance_and_make_zero_df(df, start=1, end=1):
 def make_pid_list_and_count(df):
     Pid_list = list(set(list(df.pid.unique())))
     Num_pid = len(Pid_list)
-    print('\nCreated the pid list \n With number uniques pids = ' + str(Num_pid))
+    print('\nCreated the pid list \nNumber of uniques pids = ' + str(Num_pid))
     return Pid_list, Num_pid
 
 
@@ -131,13 +145,22 @@ def drop_by_PidList(df, PidList=[]):
 def drop_by_distance(df, min_distance, max_distance):
     if 'distance' not in df.index:
         print('\nCalculating DISTANCES first')
-        df, df_zero = calc_distance_and_make_zero_df(df)
-
-    df = df.drop(df[df.distance < min_distance].index)
-    df = df.drop(df[df.distance > max_distance].index)
-
-    print('Dropped pids by distance')
-    return df
+        PidList, Num_pid = make_pid_list_and_count(df)
+        df = df.assign(distance=0)
+        new_df = df[0:0]
+        for pid in PidList:
+            df_pid = df.query('pid == @pid')
+            df_pid, df_pid_zero = calc_the_distance(df_pid)
+            df_pid = df_pid.drop(df[df_pid.distance < min_distance].index)
+            df_pid = df_pid.drop(df[df_pid.distance > max_distance].index)
+            new_df = pd.concat([new_df, df_pid])
+        print('Dropped pids by distance')
+        return new_df
+    else:
+        df = df.drop(df[df.distance < min_distance].index)
+        df = df.drop(df[df.distance > max_distance].index)
+        print('Dropped pids by distance')
+        return df
 
 
 def drop_by_NumPid(df, max_NumPid, PidList=[]):
@@ -210,6 +233,37 @@ def save_txt_info(dict_info, target_file_name):
 
     print("\nNew info.txt saved in: \n >>  " + create_txt_file_same_name)
     return cosa_scrivere_nel_file
+
+
+def rename_x_y(pedDataIface):
+    pedDataIface.df = pedDataIface.df.rename(columns={'x': 'g_x', 'y': 'g_y'})
+    print(pedDataIface.df[:3])
+    print('\nRenamed pedDataIface.df columns \nx > g_x \ny > g_y\n')
+    return pedDataIface
+
+
+def get_PDIface(source_file_path, par, rename_col=True):
+    file_list = [source_file_path]
+    target_file_path = source_file_path[:-4] + "_Proc" + ".csv"
+    pedDataIface = pio.factory_PedestrianTrajectoryDataInterface(file_list, par)
+    pedDataIface.calculate_standard_df_override()
+    pedDataIface.calculate_velocity_xy()
+    if rename_col:
+        pedDataIface = rename_x_y(pedDataIface)
+    print('\nCreated object pedDataIface')
+    return pedDataIface
+
+
+def calc_transD2Q9(pedDataIface, par):
+    transD2Q9 = pio.SpaceTime_transitions_D2Q9(pedDataIface, par)
+    transD2Q9.create_transition_matrix()
+    dict_transD2Q9 = transD2Q9.results
+    print('\nDATA TYPE : ' + str(dict_transD2Q9.pop('data_type')))
+    return dict_transD2Q9
+
+
+
+
 
 
 #  ---  ---  ---  End of the library  ---  ---  ---
