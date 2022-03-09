@@ -123,6 +123,11 @@ print('\n   ---   \n')
 dict_info = op.calc_df_info(df, Num_pid_iniziali=Num_pid_iniziali)
 print(dict_info)
 
+
+print('\n   ---   \n')
+procedere = input('To proceed press RETURN, otherwise CTRL-C')
+
+
 print('\n   ---   \n')
 # G
 target_file_name = op.save_csv(df, target_file_path, processed=True, reduced=True)
@@ -134,9 +139,6 @@ cosa_scrivere = op.save_txt_info(dict_info, target_file_name)
 print('\n   ---   \n')
 print(cosa_scrivere)
 
-print('\n   ---   \n')
-# L
-plf.just_plot_three(source_file_path, par)
 
 print('\n   ---   \n')
 # I
@@ -154,6 +156,23 @@ print('\n   ---   \n')
 plf.make_D2Q9_matrix_heatmap(dict_transD2Q9['norm_move']
                              , filename='figure_trainf10_')
 
+print('\n   ---   \n')
+# L
+plf.just_plot_three(source_file_path, par, add_info="preTrans")
+
+
+print('\n   ---   \n')
+# G
+source_file_path = op.save_csv(new_df, source_file_path, reduced=False)
+
+
+print('\n   ---   \n')
+# L
+plf.just_plot_three(source_file_path, par, add_info="postTrans")
+
 
 print('\n   --- END ---   \n')
+
+
+
 
