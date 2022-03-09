@@ -137,5 +137,14 @@ cosa_scrivere = op.save_txt_info_generic_df(target_file_path)
 print(cosa_scrivere)
 """
 
+print('\n  ---  \n')
+
+print(dict_transD2Q9['data_type'])
+print(dict_transD2Q9['move'].shape)
+print(dict_transD2Q9.keys())
+print(dict_transD2Q9['return_tracks'][:3])
+
+
+
 print('\n   --- END ---   \n')
 
