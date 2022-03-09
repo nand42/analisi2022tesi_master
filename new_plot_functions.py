@@ -24,7 +24,7 @@ class PlotPDF(object):
         self.dpi = 100
         self.bins_in_plot_scale = 10
         self.bins_in_plot_position_heatmap = 5
-        self.max_velocity = 2
+        self.max_velocity = 5
         self.grb = 'pid'
         self.experiment = self.par['experiment']
         self.datatype = self.par['datatype']
