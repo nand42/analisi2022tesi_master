@@ -72,6 +72,8 @@ MyDistance_max = op.choose_var_default(MyDistance_max, namevar='MyDistance_max')
 MyRstep_min = op.choose_var_default(MyRstep_min, namevar='MyRstep_min')
 MyRstep_max = op.choose_var_default(MyRstep_max, namevar='MyRstep_max')
 
+print(target_file_path)
+
 print('\n   ---   \n')
 
 df = pd.read_csv(source_file_path)
@@ -84,7 +86,7 @@ Pid_list, Num_pid = op.make_pid_list_and_count(df)
 Num_pid_iniziali = Num_pid
 
 print('\n   ---   \n')
-
+# I
 pedDataIface, target_file_path = op.get_PDIface(source_file_path, par, rename_col=True)
 
 print(target_file_path)
@@ -92,11 +94,11 @@ print(target_file_path)
 print(pedDataIface.df.keys())
 
 print('\n   ---   \n')
-
+# J
 dict_transD2Q9 = op.calc_transD2Q9(pedDataIface, par)
 
 print('\n   ---   \n')
-
+# K
 plf.make_D2Q9_matrix_heatmap(dict_transD2Q9['norm_move']
                              , filename='figure_trainf10_')
 
@@ -104,9 +106,10 @@ print('\n   ---   \n')
 
 new_df = dict_transD2Q9['return_tracks']
 print(new_df[:3])
-
+# G
 source_file_path = op.save_csv(new_df, source_file_path, reduced=False)
 
+# L
 plf.just_plot_three(source_file_path, par)
 
 

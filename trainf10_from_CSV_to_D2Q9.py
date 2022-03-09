@@ -60,6 +60,7 @@ source_file_path, target_file_path = op.ask_path(
 
 verbose = True
 
+# A
 MyNumPid_max = 2000
 MyDistance_min = 200
 MyDistance_max = 500
@@ -73,62 +74,86 @@ MyRstep_min = op.choose_var_default(MyRstep_min, namevar='MyRstep_min')
 MyRstep_max = op.choose_var_default(MyRstep_max, namevar='MyRstep_max')
 
 print('\n   ---   \n')
-
+# B
 df = pd.read_csv(source_file_path)
 print(df.keys())
 
 print('\n   ---   \n')
-
 Pid_list, Num_pid = op.make_pid_list_and_count(df)
-
 Num_pid_iniziali = Num_pid
 
 print('\n   ---   \n')
-
-df, Rstep_min, Rstep_max = op.drop_by_PidRstep_GetMinMax(df, MyRstep_min, MyRstep_max)
+# D
+dropbyDist = input('[dropbyDist] Return for Yes, or write n/N : ')
+if dropbyDist == 'n' or dropbyDist == 'N' or dropbyDist == 'No' or dropbyDist == 'NO':
+    print('No drop by pid distance')
+else:
+    print('Go drop by pid distance')
+    df = op.drop_by_distance(df, MyDistance_min, MyDistance_max)
 print(df.keys())
 
 print('\n   ---   \n')
-
+# B
 Pid_list, Num_pid = op.make_pid_list_and_count(df)
 
 print('\n   ---   \n')
-
-df = op.drop_by_distance(df, MyDistance_min, MyDistance_max)
+# C
+dropbypidRstep = input('[dropbypidRstep] Return for Yes, or write n/N : ')
+if dropbypidRstep == 'n' or dropbypidRstep == 'N' or dropbypidRstep == 'No' or dropbypidRstep == 'NO':
+    print('No drop by pid rstep')
+else:
+    print('Go drop by pid rstep')
+    df, Rstep_min, Rstep_max = op.drop_by_PidRstep_GetMinMax(df, MyRstep_min, MyRstep_max)
 print(df.keys())
 
 print('\n   ---   \n')
-
-df = op.drop_by_NumPid(df, MyNumPid_max)
+# E
+dropbyNumPid = input('[dropbyNumPid] Return for Yes, or write n/N : ')
+if dropbyNumPid == 'n' or dropbyNumPid == 'N' or dropbyNumPid == 'No' or dropbyNumPid == 'NO':
+    print('No drop by number of pids')
+else:
+    print('Go drop by number of pids')
+    df = op.drop_by_NumPid(df, MyNumPid_max)
 
 print('\n   ---   \n')
-
 print(df[:3])
 
 print('\n   ---   \n')
-
+# F
 dict_info = op.calc_df_info(df, Num_pid_iniziali=Num_pid_iniziali)
 print(dict_info)
 
 print('\n   ---   \n')
-
+# G
 target_file_name = op.save_csv(df, target_file_path, processed=True, reduced=True)
 
 print('\n   ---   \n')
-
+# H
 cosa_scrivere = op.save_txt_info(dict_info, target_file_name)
 
 print('\n   ---   \n')
-
 print(cosa_scrivere)
 
 print('\n   ---   \n')
-
-pedDataIface = op.get_PDIface(source_file_path, par, rename_col=True)
+# L
+plf.just_plot_three(source_file_path, par)
 
 print('\n   ---   \n')
+# I
+pedDataIface, target_file_path = op.get_PDIface(source_file_path, par, rename_col=True)
+print(target_file_path)
+print(pedDataIface.df.keys())
 
+print('\n   ---   \n')
+# J
 dict_transD2Q9 = op.calc_transD2Q9(pedDataIface, par)
+new_df = dict_transD2Q9['return_tracks']
 
 print('\n   ---   \n')
+# K
+plf.make_D2Q9_matrix_heatmap(dict_transD2Q9['norm_move']
+                             , filename='figure_trainf10_')
+
+
+print('\n   --- END ---   \n')
 
