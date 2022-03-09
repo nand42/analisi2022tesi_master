@@ -179,27 +179,6 @@ def drop_by_NumPid(df, max_NumPid, PidList=[]):
     return new_df
 
 
-def calc_df_info(df, Num_pid_iniziali=0):
-    Num_pid_rimasti = int(mcf.count_pids(df))
-    distance_min = round(df['distance'].min())
-    distance_mean = round(df['distance'].mean())
-    distance_max = round(df['distance'].max())
-    Rstep_len_min = round(df['Rstep_len'].min())
-    Rstep_len_mean = round(df['Rstep_len'].mean())
-    Rstep_len_max = round(df['Rstep_len'].max())
-
-    dict_info = {'Num_pid_rimasti': Num_pid_rimasti}
-    if Num_pid_iniziali != 0:
-        dict_info.update({'Num_pid_iniziali': Num_pid_iniziali})
-    dict_info.update({'distance_min': distance_min
-                     , 'distance_mean': distance_mean
-                     , 'distance_max': distance_max
-                     , 'Rstep_len_min': Rstep_len_min
-                     , 'Rstep_len_mean': Rstep_len_mean
-                     , 'Rstep_len_max': Rstep_len_max})
-    return dict_info
-
-
 def save_csv(df, source_file_name, processed=True, reduced=True):
     target_file_name = source_file_name[:-4]
     if processed:
@@ -212,9 +191,36 @@ def save_csv(df, source_file_name, processed=True, reduced=True):
     return target_file_name
 
 
-def save_txt_info(dict_info, target_file_name):
+def calc_df_info(df, Num_pid_iniziali=0):
+    Num_pid_rimasti = int(mcf.count_pids(df))
+    distance_min = round(df['distance'].min())
+    distance_mean = round(df['distance'].mean())
+    distance_max = round(df['distance'].max())
+    Rstep_len_min = round(df['Rstep_len'].min())
+    Rstep_len_mean = round(df['Rstep_len'].mean())
+    Rstep_len_max = round(df['Rstep_len'].max())
+    df_keys = str(df.keys())
+
+    dict_info = {'Num_pid_rimasti': Num_pid_rimasti}
+    if Num_pid_iniziali != 0:
+        dict_info.update({'Num_pid_iniziali': Num_pid_iniziali})
+    dict_info.update({'distance_min': distance_min
+                     , 'distance_mean': distance_mean
+                     , 'distance_max': distance_max
+                     , 'Rstep_len_min': Rstep_len_min
+                     , 'Rstep_len_mean': Rstep_len_mean
+                     , 'Rstep_len_max': Rstep_len_max})
+    dict_info.update({'df_keys': df_keys})
+    return dict_info
+
+
+def save_txt_info(dict_info, target_file_name, dateinname=True):
     create_txt_file_same_name = target_file_name[:-4] + '.txt'
     creationtime = datetime.datetime.now()
+    date = str(creationtime)[:10]
+    if dateinname:
+        create_txt_file_same_name = create_txt_file_same_name[:-4] + '_' + date + '.txt'
+
     cosa_scrivere_nel_file = 'CREATION DATE & TIME :  ' + str(creationtime) + \
                              '\n\ninfo txt file of dataframe: ' + \
                              '\n\n >>  ' + str(target_file_name) + \
@@ -233,6 +239,34 @@ def save_txt_info(dict_info, target_file_name):
         cosa_scrivere_nel_file = cosa_scrivere_nel_file + \
                                  '\nNumero di pid rimasti = ' + \
                                  str(dict_info['Num_pid_rimasti'])
+
+    if 'df_keys' in dict_info:
+        cosa_scrivere_nel_file = cosa_scrivere_nel_file + \
+                                 '\nKeys del dataframe = ' + \
+                                 str(dict_info['df_keys'])
+
+    with open(create_txt_file_same_name, 'w') as f:
+        f.write(cosa_scrivere_nel_file)
+
+    print("\nNew info.txt saved in: \n >>  " + create_txt_file_same_name)
+    return cosa_scrivere_nel_file
+
+
+def save_txt_info_generic_df(source_csv_file, dateinname=True):
+
+    create_txt_file_same_name = target_file_name[:-4] + '.txt'
+    creationtime = datetime.datetime.now()
+    date = str(creationtime)[:10]
+    if dateinname:
+        create_txt_file_same_name = create_txt_file_same_name[:-4] + '_' + date + '.txt'
+
+    cosa_scrivere_nel_file = 'CREATION DATE & TIME :  ' + str(creationtime) + '\n\n'
+
+    df = pd.read_csv(source_csv_file)
+    all_keys = str(df.keys())
+
+    cosa_scrivere_nel_file = cosa_scrivere_nel_file + \
+        all_keys
 
     with open(create_txt_file_same_name, 'w') as f:
         f.write(cosa_scrivere_nel_file)

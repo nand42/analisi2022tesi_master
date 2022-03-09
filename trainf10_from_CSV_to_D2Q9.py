@@ -171,8 +171,10 @@ print('\n   ---   \n')
 plf.just_plot_three(proc_target_file_path, par, add_info="postTrans")
 
 
-
-
+print('\n   ---   \n')
+# H
+cosa_scrivere = op.save_txt_info_generic_df(target_file_path)
+print(cosa_scrivere)
 
 
 print('\n   --- END ---   \n')
