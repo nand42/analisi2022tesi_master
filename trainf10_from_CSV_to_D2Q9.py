@@ -130,11 +130,11 @@ procedere = input('To proceed press RETURN, otherwise CTRL-C')
 
 print('\n   ---   \n')
 # G
-target_file_name = op.save_csv(df, target_file_path, processed=True, reduced=True)
+target_file_path = op.save_csv(df, target_file_path, processed=False, reduced=True)
 
 print('\n   ---   \n')
 # H
-cosa_scrivere = op.save_txt_info(dict_info, target_file_name)
+cosa_scrivere = op.save_txt_info(dict_info, target_file_path)
 
 print('\n   ---   \n')
 print(cosa_scrivere)
@@ -142,14 +142,20 @@ print(cosa_scrivere)
 
 print('\n   ---   \n')
 # I
-pedDataIface, target_file_path = op.get_PDIface(source_file_path, par, rename_col=True)
-print(target_file_path)
+pedDataIface, proc_target_file_path = op.get_PDIface(target_file_path, par, rename_col=True)
+print(proc_target_file_path)
 print(pedDataIface.df.keys())
 
 print('\n   ---   \n')
 # J
 dict_transD2Q9 = op.calc_transD2Q9(pedDataIface, par)
 new_df = dict_transD2Q9['return_tracks']
+
+
+print('\n   ---   \n')
+# G
+proc_target_file_path = op.save_csv(new_df, proc_target_file_path, processed=True, reduced=False)
+
 
 print('\n   ---   \n')
 # K
@@ -158,17 +164,15 @@ plf.make_D2Q9_matrix_heatmap(dict_transD2Q9['norm_move']
 
 print('\n   ---   \n')
 # L
-plf.just_plot_three(source_file_path, par, add_info="preTrans")
-
-
-print('\n   ---   \n')
-# G
-source_file_path = op.save_csv(new_df, source_file_path, reduced=False)
-
+plf.just_plot_three(target_file_path, par, add_info="preTrans")
 
 print('\n   ---   \n')
 # L
-plf.just_plot_three(source_file_path, par, add_info="postTrans")
+plf.just_plot_three(proc_target_file_path, par, add_info="postTrans")
+
+
+
+
 
 
 print('\n   --- END ---   \n')
