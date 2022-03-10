@@ -144,7 +144,12 @@ def drop_by_PidList(df, PidList=[]):
 
 
 def drop_by_distance(df, min_distance, max_distance):
-    if 'distance' not in df.index:
+    if 'distance' not in df:
+        print('\nnope\n')
+    else:
+        print('\nyesh\n')
+
+    if 'distance' not in df:
         print('\nCalculating DISTANCES first')
         PidList, Num_pid = make_pid_list_and_count(df)
         df = df.assign(distance=0)
@@ -163,6 +168,7 @@ def drop_by_distance(df, min_distance, max_distance):
         print('Dropped pids by distance')
         return new_df
     else:
+        print('DISTANCE is already in dataframe')
         df = df.drop(df[df.distance < min_distance].index)
         df = df.drop(df[df.distance > max_distance].index)
         print('Dropped pids by distance')
@@ -326,7 +332,9 @@ def calc_transD2Q9(pedDataIface, par):
     transD2Q9 = pio.SpaceTime_transitions_D2Q9(pedDataIface, par)
     transD2Q9.create_transition_matrix()
     dict_transD2Q9 = transD2Q9.results
-    print('\nDATA TYPE : ' + str(dict_transD2Q9.pop('data_type')))
+    print(dict_transD2Q9.keys())
+    print('\nDATA TYPE : ' + str(dict_transD2Q9['data_type']))
+    print(dict_transD2Q9.keys())
     return dict_transD2Q9
 
 

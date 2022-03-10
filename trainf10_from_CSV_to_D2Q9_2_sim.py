@@ -15,7 +15,7 @@ os.system('clear')
 verbose = False
 par = {'index_sort': 'unixepoch'
        , 'DataInterface_type': 'prorail_single_file'
-       , 'verbose': False
+       , 'verbose': True
 
        , 'dtype_Amatrix': np.uint16
        , 'reduce_rows_to': 10000000
@@ -125,24 +125,76 @@ new_df = dict_transD2Q9['return_tracks']
 # G: Save the CSV file of the new dataframe
 proc_target_file_path = op.save_csv(new_df, proc_target_file_path, processed=True, reduced=False)
 # K: Plot with PLF the D2Q9 maps in a 3x3 matrix figure
-plf.make_D2Q9_matrix_heatmap(dict_transD2Q9['norm_move']
-                             , filename='figure_trainf10_')
+#plf.make_D2Q9_matrix_heatmap(dict_transD2Q9['norm_move'], filename='figure_trainf10_')
 # L: Plot with PLF three figures: lines, heatmap and velocities from first df
-plf.just_plot_three(target_file_path, par, add_info="preTrans")
+#plf.just_plot_three(target_file_path, par, add_info="preTrans")
 # L: Plot with PLF three figures: lines, heatmap and velocities from second df
-plf.just_plot_three(proc_target_file_path, par, add_info="postTrans")
+#plf.just_plot_three(proc_target_file_path, par, add_info="postTrans")
 """
 # H: Save and print the TXT FILE new df
 cosa_scrivere = op.save_txt_info_generic_df(target_file_path)
 print(cosa_scrivere)
 """
 
-print('\n  ---  \n')
+print('\n  --- SIMULATION ZONE ---  \n')
+# Technical PIP-STOP
+proceed = input('\n\n IT S TIME TO CHECK \nTo proceed press RETURN, otherwise CTRL-C\n')
 
 print(dict_transD2Q9['data_type'])
 print(dict_transD2Q9['move'].shape)
 print(dict_transD2Q9.keys())
 print(dict_transD2Q9['return_tracks'][:3])
+
+print('\n  ---  \n')
+
+par.update({'simulated_steps': 2})
+par.update({'num_pid': 3})
+par.update({'starting_position': mcf.rand_initial_position_correlation_XY_D2Q9})
+
+print('\n  ---  \n')
+dict_simD2Q9 = pio.SpaceTime_transitions_D2Q9(pedDataIface, par)
+dict_simD2Q9.create_transition_matrix()
+
+print('\n  -1-  \n')
+print(dict_simD2Q9.results['data_type'])
+print(dict_simD2Q9.results.keys())
+print(dict_simD2Q9.results['return_tracks'][:3])
+print(dict_simD2Q9.results['move'].shape)
+
+print('\n -2- \n')
+simD2Q9 = sim.LatticeSimulation(dict_simD2Q9, par)
+simD2Q9.initialize_positions()
+simD2Q9.step_forward(par['simulated_steps'])
+df_simD2Q9 = simD2Q9.make_df_from_position_list()
+
+
+""" ERROR
+Traceback (most recent call last):
+  File "/Users/dcm/analisi2022tesi_master/trainf10_from_CSV_to_D2Q9_2_sim.py", line 167, in <module>
+    simD2Q9.step_forward(par['simulated_steps'])
+  File "/Users/dcm/analisi2022tesi_master/pathintegralanalytics/pathintegralanalytics/LatticePedSimulation.py", line 93, in step_forward
+    current_step = self.step(previous_step, current_probability_distrib, loc_time + 1
+  File "/Users/dcm/analisi2022tesi_master/pathintegralanalytics/pathintegralanalytics/LatticePedSimulation.py", line 113, in step
+    return self._simulation_protocols.step(*args)
+  File "/Users/dcm/analisi2022tesi_master/pathintegralanalytics/pathintegralanalytics/LatticePedSimulation.py", line 127, in step
+    return mcf.passo(*args)
+  File "/Users/dcm/analisi2022tesi_master/pathintegralanalytics/pathintegralanalytics/markov_chain_fun.py", line 1784, in passo
+    rand_k = np.random.choice(vet_k, p=n)
+  File "mtrand.pyx", line 939, in numpy.random.mtrand.RandomState.choice
+ValueError: probabilities do not sum to 1
+"""
+
+
+
+"""
+target_file_sim = '/Users/dcm/analisi2022tesi_master/simulationDatasets/sim_D2Q9.csv'
+target_file_sim = op.save_csv(df_simD2Q9, target_file_sim)
+df = pd.read_csv(target_file_sim)
+lines = plf.PositionLines(df, par)
+lines.figure_save()
+heatmap = PositionHeatmap(df, par)
+heatmap.figure_save()
+"""
 
 
 
