@@ -16,29 +16,19 @@ verbose = False
 par = {'index_sort': 'unixepoch'
        , 'DataInterface_type': 'prorail_single_file'
        , 'verbose': True
-
        , 'dtype_Amatrix': np.uint16
        , 'reduce_rows_to': 10000000
        , 'Lx': 23000
        , 'Ly': 10000
        , 'Dx': 200
        , 'Dy': 100
-       # , 'bins_hist_vtk': [
-       #      np.linspace(0, 230, 200),
-       #      np.linspace(-1, 1, 100),
-       #      np.linspace(0, 200, 200)
-       #      ]
        , 'delta_pedestrian_state_dimension': 1
-
        , 'window_length_loc': 31
        , 'polyorder_loc': 7
        , 'cut_short_trj': (100, 250)
-
        , 'calc_velocity': mcf.calc_velocity_SG
        , 'scale': 'D'
-
        , 'grb': 'pid'
-
        , 'experiment': 'trainf10'
        , 'datatype': 'RealData'
        , 'format': '.pdf'
@@ -147,7 +137,7 @@ print(dict_transD2Q9['return_tracks'][:3])
 
 print('\n  ---  \n')
 
-par.update({'simulated_steps': 2})
+par.update({'simulated_steps': 10})
 par.update({'num_pid': 3})
 par.update({'starting_position': mcf.rand_initial_position_correlation_XY_D2Q9})
 
@@ -185,17 +175,16 @@ ValueError: probabilities do not sum to 1
 """
 
 
-
-"""
 target_file_sim = '/Users/dcm/analisi2022tesi_master/simulationDatasets/sim_D2Q9.csv'
 target_file_sim = op.save_csv(df_simD2Q9, target_file_sim)
 df = pd.read_csv(target_file_sim)
+
+"""
 lines = plf.PositionLines(df, par)
 lines.figure_save()
 heatmap = PositionHeatmap(df, par)
 heatmap.figure_save()
 """
-
 
 
 print('\n   --- END ---   \n')
